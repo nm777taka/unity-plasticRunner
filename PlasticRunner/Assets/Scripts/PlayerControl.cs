@@ -10,7 +10,7 @@ public class PlayerControl : MonoBehaviour {
 	public static float JUMP_KEY_RELEASE_REDUCE = 0.5f; //ジャンプからの減速値
 	public static float NARAKU_HEIGHT = -0.5f;
 	private float click_timer = -1.0f;//ボタンが押されてからの時間
-	private float CLICK_GRACE_TIME = 0.5f; //ジャンプしたい意志を受ける時間
+	private float CLICK_GRACE_TIME = 0.3f; //ジャンプしたい意志を受ける時間
 
 	public enum STEP { //プレイヤーの状態
 		NONE = -1,
@@ -26,7 +26,7 @@ public class PlayerControl : MonoBehaviour {
 
 	public float step_timer = 0.0f; //経過時間
 	private bool is_landed = false; //着地してるか
-	private bool is_collided = false; //何かとぶつかっているか
+	private bool is_colided = false; //何かとぶつかっているか
 	private bool is_key_released = false; //ボタンが離されてるかどうか
 
 	public float current_speed = 0.0f;
@@ -65,7 +65,15 @@ public class PlayerControl : MonoBehaviour {
 			}
 		}
 
+		if(this.is_colided) {
 
+				if(velocity.y > Physics.gravity.y*Time.deltaTime) {
+
+					velocity.y = Physics.gravity.y*Time.deltaTime;
+
+					this.rigidbody.velocity = velocity;
+				}
+		}
 
 		if(this.next_step == STEP.NONE) {
 
@@ -191,6 +199,17 @@ public class PlayerControl : MonoBehaviour {
 			//sからeの間に何かがあって、JUMP直後ではない場合
 			this.is_landed = true;
 		} while(false);
+	}
+
+	//プレイヤーが死んだかどうか返す
+	public bool isPlayerEnd()
+	{
+		bool ret = false;
+		switch(this.step) {
+			case STEP.MISS: ret = true;
+			break;
+		}
+		return(	ret);
 	}
 
 
